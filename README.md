@@ -4,7 +4,7 @@
 
 ---
 
-## 📌 İçindekiler
+##  İçindekiler
 1. [Mimarî ve Teknolojiler](#-mimarî-ve-teknolojiler)
 2. [Klasör Yapısı](#-klasör-yapısı)
 3. [Varsayılan Kullanıcı Hesapları](#-varsayılan-kullanıcı-hesapları)
@@ -17,7 +17,7 @@
 
 ---
 
-## 🏛 Mimarî ve Teknolojiler
+##  Mimarî ve Teknolojiler
 
 Uygulama 3 temel katmandan oluşan katmanlı mimariye (Clean/Layered Architecture) sahiptir:
 1. **Frontend (İstemci Katmanı):** React 18, TypeScript, Tailwind CSS, Lucide Icons, Vite
@@ -32,7 +32,7 @@ Uygulama 3 temel katmandan oluşan katmanlı mimariye (Clean/Layered Architectur
 
 ---
 
-## 📂 Klasör Yapısı
+##  Klasör Yapısı
 
 ```
 KütüphaneSistemi/
@@ -87,7 +87,7 @@ KütüphaneSistemi/
 
 ---
 
-## 👥 Varsayılan Kullanıcı Hesapları
+## Varsayılan Kullanıcı Hesapları
 
 Veritabanı otomatik olarak tohumlandığında (seed) aşağıdaki test kullanıcıları hazır gelir:
 
@@ -100,7 +100,7 @@ Veritabanı otomatik olarak tohumlandığında (seed) aşağıdaki test kullanı
 
 ---
 
-## 🚀 Hızlı Başlangıç (Docker Compose)
+##  Hızlı Başlangıç (Docker Compose)
 
 Sistemi tüm bileşenleriyle (PostgreSQL, Backend API, Frontend) tek komutla çalıştırmak için:
 
@@ -119,7 +119,7 @@ Servisler hazır olduğunda:
 
 ---
 
-## 🛠 Yerel Geliştirme Ortamı Kurulumu
+##  Yerel Geliştirme Ortamı Kurulumu
 
 Eğer Docker kullanmadan doğrudan yerel ortamda çalıştırmak isterseniz:
 
@@ -161,7 +161,7 @@ Frontend geliştirme sunucusu [http://localhost:5173](http://localhost:5173) adr
 
 ---
 
-## 🔌 API Uç Noktaları ve Swagger
+##  API Uç Noktaları ve Swagger
 
 Tüm uç noktalar Türkçe açıklamalar ve standart JSON yanıt formatıyla dokümante edilmiştir:
 
@@ -197,7 +197,7 @@ Tüm uç noktalar Türkçe açıklamalar ve standart JSON yanıt formatıyla dok
 
 ---
 
-## ⚖️ İş Kuralları ve Doğrulamalar
+##  İş Kuralları ve Doğrulamalar
 
 1. **Ödünç Limiti:** Bir öğrenci aynı anda en fazla **3 aktif** kitaba sahip olabilir.
 2. **Ödünç Süresi:** Standart ödünç süresi **15 gündür**.
@@ -208,7 +208,7 @@ Tüm uç noktalar Türkçe açıklamalar ve standart JSON yanıt formatıyla dok
 
 ---
 
-## 📊 UML Diyagramları
+##  UML Diyagramları
 
 Projenin `uml/` klasörü altında 4 adet eksiksiz ve standart PlantUML diyagramı yer almaktadır:
 
@@ -219,7 +219,7 @@ Projenin `uml/` klasörü altında 4 adet eksiksiz ve standart PlantUML diyagram
 
 ---
 
-## 🧪 Otomatik Testler
+##  Otomatik Testler
 
 Backend testleri `pytest` kullanılarak yazılmıştır:
 ```bash
