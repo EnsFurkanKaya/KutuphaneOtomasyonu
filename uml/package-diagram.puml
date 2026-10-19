@@ -1,0 +1,119 @@
+@startuml
+!theme plain
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam package {
+    BackgroundColor #F8FAFC
+    BorderColor #1E293B
+}
+
+title **Online Kütüphane Yönetim Sistemi - UML Paket Diyagramı (Package Diagram)**
+caption Katmanlı ve Temiz Mimari (Clean/Layered Architecture) Paket Bağımlılıkları
+
+package "Presentation (Web Arayüzü)" as pkg_presentation {
+    package "Pages (Sayfalar)" {
+        [LoginPage]
+        [RegisterPage]
+        [BookCatalogPage]
+        [BookDetailPage]
+        [StudentDashboard]
+        [MyLoansPage]
+        [AdminDashboard]
+        [BookManagementPage]
+        [CategoryManagementPage]
+        [LoanManagementPage]
+        [OverdueReportPage]
+    }
+    package "Components (Bileşenler & Formlar)" {
+        [Navbar]
+        [Sidebar]
+        [Modal / Dialog]
+        [DataTable & Pagination]
+        [StatusBadge]
+        [ConfirmDialog]
+    }
+    package "Services (İstemci API İletişimi)" {
+        [apiClient (Axios/Fetch)]
+        [AuthContext / TokenStore]
+    }
+}
+
+package "API Layer (HTTP & Yetkilendirme)" as pkg_api {
+    package "Routers (Endpoint'ler)" {
+        [AuthRouter]
+        [BooksRouter]
+        [CategoriesRouter]
+        [LoansRouter]
+        [UsersRouter]
+        [ReportsRouter]
+    }
+    package "Schemas (Pydantic DTO)" {
+        [UserSchemas]
+        [BookSchemas]
+        [LoanSchemas]
+        [CategorySchemas]
+        [ReportSchemas]
+    }
+    package "Dependencies & Middleware" {
+        [AuthGuard & RoleCheck]
+        [ErrorHandler]
+    }
+}
+
+package "Application Layer (Kullanım Senaryoları)" as pkg_application {
+    [AuthService]
+    [BookService]
+    [CategoryService]
+    [LoanService]
+    [ReportService]
+    [UserService]
+}
+
+package "Domain Layer (Çekirdek İş Mantığı)" as pkg_domain {
+    [User (Entity)]
+    [Book (Entity)]
+    [Category (Entity)]
+    [Loan (Entity)]
+    [BusinessRules (Saf Kurallar)]
+    [DomainErrors]
+    [DomainEnums (Role, Status)]
+}
+
+package "Infrastructure Layer (Altyapı & Kalıcılık)" as pkg_infrastructure {
+    package "Repositories (Veri Erişimi)" {
+        [UserRepository]
+        [BookRepository]
+        [CategoryRepository]
+        [LoanRepository]
+        [TokenRepository]
+    }
+    package "Database & ORM" {
+        [SQLAlchemy Engine & Session]
+        [Alembic Migrations]
+    }
+    package "Security & Config" {
+        [Argon2Hasher]
+        [JWTManager]
+        [AppSettings]
+    }
+}
+
+' Bağımlılık Okları (Dependencies)
+pkg_presentation ..> pkg_api : HTTP / REST API üzerinden JSON çağrıları >
+pkg_api ..> pkg_application : servis metotlarını çağırır >
+pkg_api ..> pkg_infrastructure : Auth bağımlılıkları (JWT/Session) >
+
+pkg_application ..> pkg_domain : domain kurallarını ve varlıklarını yönetir >
+pkg_application ..> pkg_infrastructure : repository arayüzleri ve transaction yönetimi >
+
+pkg_infrastructure ..> pkg_domain : veritabanı modelleri domain kural ve durumlarını yansıtır >
+
+note bottom of pkg_domain
+  <b>Domain Bağımsızlığı İlkesi:</b>
+  Domain katmanı hiçbir harici web çatısına,
+  HTTP kütüphanesine veya arayüze bağımlı değildir.
+  İş kuralları saf Python fonksiyonları olarak test edilir.
+end note
+
+@enduml

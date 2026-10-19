@@ -1,0 +1,140 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam class {
+    BackgroundColor #FDFDFD
+    ArrowColor #2C3E50
+    BorderColor #2C3E50
+}
+
+title **Online Kütüphane Yönetim Sistemi - UML Sınıf Diyagramı (Class Diagram)**
+
+enum Role <<enumeration>> {
+  + STUDENT
+  + ADMIN
+}
+
+enum LoanStatus <<enumeration>> {
+  + ACTIVE
+  + OVERDUE
+  + RETURNED
+}
+
+class User {
+  - id: int
+  - studentNumber: String [0..1]
+  - fullName: String
+  - email: String
+  - passwordHash: String
+  - role: Role
+  - isActive: boolean
+  - mustChangePassword: boolean
+  - failedLoginAttempts: int
+  - lockedUntil: DateTime [0..1]
+  - createdAt: DateTime
+  - updatedAt: DateTime
+  + login(password: String): boolean
+  + logout(): void
+  + searchBooks(query: String): List<Book>
+  + borrowBook(book: Book): Loan
+  + returnBook(loan: Loan): void
+  + isAdmin(): boolean
+}
+
+class Category {
+  - id: int
+  - name: String
+  - description: String [0..1]
+  - isActive: boolean
+  - createdAt: DateTime
+  + addBook(book: Book): void
+  + removeBook(book: Book): void
+  + getBookCount(): int
+}
+
+class Book {
+  - id: int
+  - isbn: String
+  - title: String
+  - author: String
+  - description: String [0..1]
+  - publisher: String [0..1]
+  - publicationYear: int [0..1]
+  - shelfLocation: String [0..1]
+  - totalCopies: int
+  - availableCopies: int
+  - isActive: boolean
+  - createdAt: DateTime
+  - updatedAt: DateTime
+  + isAvailable(): boolean
+  + updateStock(newTotal: int): void
+  + updateDetails(details: Map): void
+  # decreaseAvailable(): void
+  # increaseAvailable(): void
+}
+
+class Loan {
+  - id: int
+  - borrowedAt: DateTime
+  - dueAt: DateTime
+  - returnedAt: DateTime [0..1]
+  - createdAt: DateTime
+  - updatedAt: DateTime
+  + {static} borrow(user: User, book: Book): Loan
+  + returnBook(): void
+  + isOverdue(): boolean
+  + overdueDays(): int
+  + getStatus(): LoanStatus
+}
+
+class OverdueReport {
+  - items: List<OverdueItem>
+  - total: int
+  - page: int
+  - pageSize: int
+  - generatedAt: DateTime
+  - startDate: Date [0..1]
+  - endDate: Date [0..1]
+  + generateReport(): void
+}
+
+class OverdueItem {
+  - loanId: int
+  - studentNumber: String
+  - fullName: String
+  - bookTitle: String
+  - isbn: String
+  - borrowedAt: DateTime
+  - dueAt: DateTime
+  - overdueDays: int
+}
+
+' İlişkiler ve Çokluklar (Multiplicities)
+Category "1" o-- "0..*" Book : gruplar (aggregation) >
+User "1" *-- "0..*" Loan : ödünç işlemlerine sahiptir >
+Book "1" *-- "0..*" Loan : ödünç verilir >
+
+User ..> Role : kullanır
+Loan ..> LoanStatus : durumunu belirler
+
+OverdueReport "1" *-- "0..*" OverdueItem : içerir (composition)
+OverdueReport ..> Loan : verilerini özetler (dependency)
+
+note right of Loan
+  <b>İş Kuralları (Business Rules):</b>
+  * Varsayılan ödünç süresi 14 gün.
+  * Bir öğrencinin en fazla 3 aktif kaydı olabilir.
+  * returnedAt == null ve dueAt < now ise gecikmiştir (OVERDUE).
+  * Stok sıfırsa ödünç verilemez.
+end note
+
+note bottom of Book
+  <b>Stok Kısıtları:</b>
+  * 0 <= availableCopies <= totalCopies
+  * Aktif ödünç varken silinemez, pasifleştirilir.
+end note
+
+@enduml

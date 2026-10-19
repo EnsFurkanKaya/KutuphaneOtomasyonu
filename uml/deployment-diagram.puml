@@ -1,0 +1,72 @@
+@startuml
+!theme plain
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+
+title **Online Kütüphane Yönetim Sistemi - UML Dağıtım Diyagramı (Deployment Diagram)**
+caption Docker Compose Tabanlı Üç Katmanlı Mimari ve Ağ Bağlantıları
+
+node "Client Device (Kullanıcı Cihazı)" as client_device <<device>> {
+    node "Modern Web Browser" as browser <<executionEnvironment>> {
+        artifact "React SPA (TypeScript)\nHTML5 / CSS / JS" as spa_runtime
+    }
+}
+
+node "Production Host / Docker Engine Server" as host_server <<device>> {
+    
+    node "Docker Network: kutuphane-network (Bridge)" as docker_net {
+        
+        node "Web Server Container\n[kutuphane-frontend]" as web_node <<executionEnvironment>> {
+            component "Nginx 1.27 (Alpine)" as nginx_server
+            artifact "Built SPA Files\n(/usr/share/nginx/html)" as static_dist
+            nginx_server ..> static_dist : servis eder
+        }
+
+        node "API Server Container\n[kutuphane-backend]" as api_node <<executionEnvironment>> {
+            component "Uvicorn ASGI Server" as uvicorn
+            component "FastAPI Web Framework (Python 3.12)" as fastapi_app
+            component "SQLAlchemy 2.0 ORM & Alembic" as orm_layer
+            uvicorn -> fastapi_app
+            fastapi_app -> orm_layer
+        }
+
+        node "Database Server Container\n[kutuphane-db]" as db_node <<executionEnvironment>> {
+            database "PostgreSQL 16 RDBMS" as postgres_db {
+                frame "Database: kutuphane" {
+                    [users Table]
+                    [categories Table]
+                    [books Table]
+                    [loans Table]
+                    [revoked_tokens Table]
+                }
+            }
+        }
+    }
+    
+    storage "Host Storage (Persistent Volume)\n[postgres_data]" as db_volume {
+        folder "/var/lib/postgresql/data" as data_folder
+    }
+}
+
+' Ağ ve İletişim Protokolleri
+browser -- nginx_server : HTTP / HTTPS (Port 80/443 veya Dev 8080)\nStatik dosyaların indirilmesi
+browser -- uvicorn : HTTPS / REST API / JSON (Port 8000)\nÇerez tabanlı veya Bearer JWT oturumu
+orm_layer -- postgres_db : PostgreSQL Wire Protocol (TCP 5432)\nSQLAlchemy Pool (ACID Transactions)
+postgres_db -down- data_folder : Kalıcı Disk Eşleme (Docker Volume)
+
+note right of db_volume
+  <b>Veri Kalıcılığı:</b>
+  Docker servisleri durdurulsa
+  veya yeniden başlatılsa bile veriler
+  postgres_data volume'ünde korunur.
+end note
+
+note top of api_node
+  <b>Giriş Güvenliği:</b>
+  API başlamadan önce 
+  wait_for_db ile veritabanının
+  bağlantı kabul ettiği doğrulanır.
+end note
+
+@enduml

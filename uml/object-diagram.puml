@@ -1,0 +1,66 @@
+@startuml
+!theme plain
+skinparam objectAttributeIconSize 0
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundCorner 8
+skinparam object {
+    BackgroundColor #F8FAFC
+    BorderColor #334155
+    ArrowColor #334155
+}
+
+title **Online Kütüphane Yönetim Sistemi - UML Nesne Diyagramı (Object Diagram)**
+caption Örnek Çalışma Zamanı Senaryosu: Ahmet Yılmaz'ın 'Nesne Yönelimli Programlama' Kitabını Ödünç Alması
+
+object "bilgisayar : Category" as bilgisayar {
+  id = 1
+  name = "Bilgisayar"
+  description = "Yazılım mühendisliği ve programlama kitapları"
+  isActive = true
+}
+
+object "programlamaKitabi : Book" as programlamaKitabi {
+  id = 101
+  isbn = "9780000000001"
+  title = "Nesne Yönelimli Programlama"
+  author = "Mehmet Demir"
+  publisher = "Akademi Yayınları"
+  publicationYear = 2023
+  shelfLocation = "A-101"
+  totalCopies = 5
+  availableCopies = 4
+  isActive = true
+}
+
+object "ahmet : User" as ahmet {
+  id = 501
+  studentNumber = "2026001"
+  fullName = "Ahmet Yılmaz"
+  email = "ahmet.yilmaz@ogr.edu.tr"
+  role = Role.STUDENT
+  isActive = true
+  failedLoginAttempts = 0
+}
+
+object "odunc001 : Loan" as odunc001 {
+  id = 1001
+  borrowedAt = "2026-10-10T10:00:00Z"
+  dueAt = "2026-10-24T10:00:00Z"
+  returnedAt = null
+}
+
+' Nesneler Arası Bağlantılar (Links)
+bilgisayar "1" --- "0..*" programlamaKitabi : kategorisinde yer alır
+ahmet "1" --- "1" odunc001 : ödünç aldı
+programlamaKitabi "1" --- "1" odunc001 : ödünç verildi
+
+note right of odunc001
+  <b>Nesne Durumu Değerlendirmesi:</b>
+  * returnedAt == null (kitap henüz iade edilmedi, AKTİF)
+  * Ödünç süresi: 14 gün (10.10.2026 -> 24.10.2026)
+  * Kitabın toplam 5 kopyasından 1'i Ahmet'te olduğu için
+    availableCopies = 4 olarak güncellenmiştir.
+end note
+
+@enduml
